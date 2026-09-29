@@ -17,7 +17,7 @@ dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
     compileOnly("com.android.tools.build:gradle:9.2.1")
 
-    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation(platform("org.junit:junit-bom:5.14.4"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(gradleTestKit())
