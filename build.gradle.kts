@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
+
 plugins {
     kotlin("jvm") version "2.4.20"
     id("java-gradle-plugin")
@@ -23,6 +25,11 @@ java {
 
 kotlin {
     jvmToolchain(11)
+    compilerOptions {
+        apiVersion.set(KotlinVersion.KOTLIN_2_0)
+        languageVersion.set(KotlinVersion.KOTLIN_2_0)
+        freeCompilerArgs.add("-Xsuppress-version-warnings")
+    }
 }
 
 gradlePlugin {
