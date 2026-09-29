@@ -46,48 +46,10 @@ class FastStatsProguardPlugin : Plugin<Project> {
                     task.dependsOn(extension.proguardTask.get())
                 }
             }
-
-            configureAndroidIntegration(project, extension, uploadTask)
         }
-    }
 
-    private fun configureAndroidIntegration(
-        project: Project,
-        extension: FastStatsProguardExtension,
-        uploadTask: org.gradle.api.tasks.TaskProvider<UploadProguardMappingsTask>,
-    ) {
-        try {
-            val androidExtension = project.extensions.findByName("android") ?: return
-
-            val appExtension = try {
-                androidExtension as com.android.build.gradle.AppExtension
-            } catch (_: ClassCastException) {
-                return
-            }
-
-            appExtension.applicationVariants.all { variant ->
-                if (!variant.buildType.isMinifyEnabled) return@all
-
-                val variantName = variant.name.replaceFirstChar { it.uppercase() }
-                val variantMappingFile = variant.mappingFileProvider.get().singleOrNull() ?: return@all
-
-                if (extension.mappingFiles.isEmpty) {
-                    uploadTask.configure { task ->
-                        task.mappingFiles.from(variantMappingFile)
-                    }
-                }
-
-                val minifyTask = project.tasks.findByName("minify${variantName}WithR8")
-                    ?: project.tasks.findByName("minify${variantName}WithProguard")
-
-                if (minifyTask != null) {
-                    uploadTask.configure { task ->
-                        task.mustRunAfter(minifyTask)
-                    }
-                }
-            }
-        } catch (_: NoClassDefFoundError) {
-            // Android plugin not on classpath, skip integration
+        project.pluginManager.withPlugin("com.android.application") {
+            AndroidIntegration.configure(project, extension, uploadTask)
         }
     }
 }

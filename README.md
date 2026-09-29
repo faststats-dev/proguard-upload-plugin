@@ -68,7 +68,7 @@ mappingsUpload {
 }
 ```
 
-When the Android Gradle Plugin is applied to an application module (`com.android.application`), the plugin
+When the Android Gradle Plugin (8.0+) is applied to an application module (`com.android.application`), the plugin
 automatically picks up the R8/ProGuard mapping file of every variant with `isMinifyEnabled = true`. This only happens if
 `mappingFiles` is left empty; any explicitly configured mapping files take precedence.
 
