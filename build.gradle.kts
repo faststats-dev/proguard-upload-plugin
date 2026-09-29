@@ -39,8 +39,8 @@ gradlePlugin {
 publishing {
     publications.withType<MavenPublication>().configureEach {
         pom.scm {
-            val repository = "FastStats-dev/sourcemaps"
-            url.set("https://github.com/$repository/tree/main/packages/proguard-plugin")
+            val repository = "FastStats-dev/proguard-upload-plugin"
+            url.set("https://github.com/$repository")
             connection.set("scm:git:git://github.com/$repository.git")
             developerConnection.set("scm:git:ssh://github.com/$repository.git")
         }
