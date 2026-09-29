@@ -68,8 +68,15 @@ mappingsUpload {
 }
 ```
 
-The plugin automatically detects Android R8/ProGuard mapping file outputs when the Android Gradle Plugin is present. No
-additional configuration is needed.
+When the Android Gradle Plugin is applied to an application module (`com.android.application`), the plugin
+automatically picks up the R8/ProGuard mapping file of every variant with `isMinifyEnabled = true`. This only happens if
+`mappingFiles` is left empty; any explicitly configured mapping files take precedence.
+
+The upload task is ordered after the variant's minify task but does not depend on it, so run the build first:
+
+```bash
+./gradlew assembleRelease uploadProguardMappings
+```
 
 ### All Options
 
@@ -78,10 +85,11 @@ mappingsUpload {
     // Required – API auth token. Falls back to FASTSTATS_AUTH_TOKEN env var.
     authToken.set("your-auth-token")
 
-    // Optional – API endpoint (default: https://sourcemaps.faststats.dev/api/sourcemaps)
-    endpoint.set("https://sourcemaps.faststats.dev/api/sourcemaps")
+    // Optional – API endpoint (default: https://sourcemaps.faststats.dev/v0/upload)
+    endpoint.set("https://sourcemaps.faststats.dev/v0/upload")
 
     // Optional – Build identifier (default: project.version)
+    // Also written into META-INF/faststats.properties of every Jar task output (see "How It Works")
     buildId.set("1.2.3")
 
     // Optional – Task that produces the mapping file (adds a dependsOn)
@@ -149,8 +157,10 @@ build:
 
 1. The plugin looks for mapping files added via `mappingFiles.from(...)`, or auto-detected Android build outputs.
 2. If `proguardTask` is set, the upload task automatically depends on it.
-3. Uses `project.version` as the `buildId` by default.
-4. Each mapping file is split by class sections and uploaded in batches of up to 50MB, ensuring no class mapping is
+3. Uses `project.version` as the `buildId` by default (make sure `version` is set, otherwise it is `unspecified`).
+4. If a `META-INF/faststats.properties` resource is packaged by any `Jar` task, its `buildId=` line is replaced (or
+   added) with the configured `buildId`, so the build ID is available at runtime.
+5. Each mapping file is split by class sections and uploaded in batches of up to 50MB, ensuring no class mapping is
    split across batches.
 
 ## Requirements
