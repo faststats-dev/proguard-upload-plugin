@@ -165,5 +165,8 @@ build:
 
 ## Requirements
 
-- Gradle 7.0+
-- JDK 11+
+|                       | Minimum version | Notes                                                                |
+|-----------------------|-----------------|----------------------------------------------------------------------|
+| Gradle                | 8.0             | Tested against 8.0, the latest 8.x and 9.x                           |
+| JDK (running Gradle)  | 11              | Android builds need JDK 17, as required by the Android Gradle Plugin |
+| Android Gradle Plugin | 8.0             | Only needed for the automatic Android integration; AGP 9 supported   |
