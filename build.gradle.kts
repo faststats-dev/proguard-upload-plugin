@@ -16,6 +16,11 @@ repositories {
 dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
     compileOnly("com.android.tools.build:gradle:9.2.1")
+
+    testImplementation(platform("org.junit:junit-bom:5.13.4"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(gradleTestKit())
 }
 
 java {
@@ -53,6 +58,10 @@ publishing {
         }
     }
     repositories.maven {
+        name = "functionalTest"
+        url = uri(layout.buildDirectory.dir("functional-test-repo"))
+    }
+    repositories.maven {
         val branch = if (version.toString().contains("-pre")) "snapshots" else "releases"
         url = uri("https://repo.faststats.dev/$branch")
         credentials {
@@ -60,4 +69,17 @@ publishing {
             password = System.getenv("REPOSITORY_TOKEN")
         }
     }
+}
+
+tasks.test {
+    useJUnitPlatform()
+
+    val functionalTestRepo = layout.buildDirectory.dir("functional-test-repo")
+    dependsOn("publishAllPublicationsToFunctionalTestRepository")
+    inputs.dir(functionalTestRepo).withPathSensitivity(PathSensitivity.RELATIVE)
+    systemProperty("functionalTest.repo", functionalTestRepo.get().asFile.absolutePath)
+    systemProperty("functionalTest.pluginVersion", version.toString())
+    systemProperty("functionalTest.currentGradleVersion", gradle.gradleVersion)
+
+    javaLauncher.set(javaToolchains.launcherFor { languageVersion.set(JavaLanguageVersion.of(17)) })
 }

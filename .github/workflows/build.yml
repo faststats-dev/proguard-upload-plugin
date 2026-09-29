@@ -1,4 +1,4 @@
-name: Build
+name: Build & Test
 on:
   push:
     branches:
@@ -19,5 +19,5 @@ jobs:
         uses: gradle/actions/setup-gradle@v6
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Build and test with Gradle
+        run: ./gradlew build test
